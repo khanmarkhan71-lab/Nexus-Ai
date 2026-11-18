@@ -16,6 +16,8 @@
   }
   *{margin:0;padding:0;box-sizing:border-box;}
   html,body{height:100%;overflow:hidden;}
+  :focus-visible{outline:2px solid var(--accent2);outline-offset:3px;}
+  @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important;}}
   body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;display:flex;flex-direction:column;height:100dvh;}
   body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
     background:radial-gradient(ellipse 60% 40% at 20% 10%,rgba(124,58,237,0.12) 0%,transparent 70%),
@@ -166,6 +168,7 @@
   .spinner{width:40px;height:40px;border:3px solid rgba(124,58,237,.2);
     border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px;}
   @keyframes spin{to{transform:rotate(360deg)}}
+  @media (max-width:520px){.header{padding:10px 12px}.header-right{gap:5px}.model-picker{max-width:110px;font-size:10px}.header-name{font-size:16px}.header-sub{font-size:9px}.quick-grid{max-width:100%;}.msg-body{max-width:90%;}}
   .online-dot{width:7px;height:7px;background:#22c55e;border-radius:50%;
     display:inline-block;margin-right:4px;animation:pulse 2s infinite;}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
@@ -184,25 +187,25 @@
       </div>
     </div>
     <div class="header-right">
-      <select class="model-picker" id="modelPicker" onchange="MODEL=this.value">
+      <select class="model-picker" id="modelPicker" aria-label="Choose AI model" onchange="MODEL=this.value">
         <option value="deepseek/deepseek-chat:free">⭐ DeepSeek</option>
         <option value="qwen/qwen-2.5-coder-32b-instruct:free">🔥 Qwen Coder</option>
         <option value="meta-llama/llama-3.1-8b-instruct:free">⚡ Llama 3.1</option>
         <option value="google/gemma-3-27b-it:free">🧠 Gemma 3</option>
         <option value="mistralai/mistral-7b-instruct:free">🌪 Mistral</option>
       </select>
-      <button class="icon-btn" onclick="clearCurrent()">🗑️</button>
+      <button class="icon-btn" type="button" aria-label="Clear current conversation" onclick="clearCurrent()">🗑️</button>
     </div>
   </div>
 
-  <div class="tabs">
-    <button class="tab-btn active" id="tab-chat" onclick="switchTab('chat')">💬 Assistant</button>
-    <button class="tab-btn" id="tab-code" onclick="switchTab('code')">💻 Coding</button>
-    <button class="tab-btn" id="tab-image" onclick="switchTab('image')">🎨 Images</button>
+  <div class="tabs" role="tablist" aria-label="NexusAI modes">
+    <button class="tab-btn active" id="tab-chat" role="tab" aria-selected="true" aria-controls="panel-chat" onclick="switchTab('chat')">💬 Assistant</button>
+    <button class="tab-btn" id="tab-code" role="tab" aria-selected="false" aria-controls="panel-code" onclick="switchTab('code')">💻 Coding</button>
+    <button class="tab-btn" id="tab-image" role="tab" aria-selected="false" aria-controls="panel-image" onclick="switchTab('image')">🎨 Images</button>
   </div>
 
   <!-- CHAT -->
-  <div class="tab-panel active" id="panel-chat">
+  <div class="tab-panel active" id="panel-chat" role="tabpanel" aria-labelledby="tab-chat">
     <div class="messages" id="chatMessages">
       <div class="welcome">
         <div class="welcome-emoji">🤖</div>
@@ -218,15 +221,15 @@
     </div>
     <div class="input-area">
       <div class="input-row">
-        <textarea class="msg-input" id="chatInput" placeholder="Ask me anything…" rows="1"
+        <textarea class="msg-input" id="chatInput" aria-label="Message the assistant" placeholder="Ask me anything…" rows="1"
           oninput="autoGrow(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}"></textarea>
-        <button class="send-btn" id="chatSend" onclick="sendChat()">➤</button>
+        <button class="send-btn" id="chatSend" type="button" aria-label="Send assistant message" onclick="sendChat()">➤</button>
       </div>
     </div>
   </div>
 
   <!-- CODE -->
-  <div class="tab-panel" id="panel-code">
+  <div class="tab-panel" id="panel-code" role="tabpanel" aria-labelledby="tab-code">
     <div class="messages" id="codeMessages">
       <div class="welcome">
         <div class="welcome-emoji">💻</div>
@@ -244,15 +247,15 @@
     </div>
     <div class="input-area">
       <div class="input-row">
-        <textarea class="msg-input" id="codeInput" placeholder="Ask for code…" rows="1"
+        <textarea class="msg-input" id="codeInput" aria-label="Message the coding assistant" placeholder="Ask for code…" rows="1"
           oninput="autoGrow(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendCode()}"></textarea>
-        <button class="send-btn" id="codeSend" onclick="sendCode()">➤</button>
+        <button class="send-btn" id="codeSend" type="button" aria-label="Send coding message" onclick="sendCode()">➤</button>
       </div>
     </div>
   </div>
 
   <!-- IMAGES -->
-  <div class="tab-panel" id="panel-image">
+  <div class="tab-panel" id="panel-image" role="tabpanel" aria-labelledby="tab-image">
     <div class="image-panel-inner">
       <div class="welcome-title" style="margin-bottom:4px">🎨 Image Generator</div>
       <div style="color:var(--muted);font-size:13px;margin-bottom:16px">Free unlimited AI images!</div>
@@ -270,10 +273,10 @@
         </div>
       </div>
       <div class="field">
-        <label>Describe your image</label>
-        <textarea id="imgPrompt" rows="3" placeholder="e.g. A futuristic city at night with neon lights…"></textarea>
+        <label for="imgPrompt">Describe your image</label>
+        <textarea id="imgPrompt" aria-label="Describe the image to generate" rows="3" placeholder="e.g. A futuristic city at night with neon lights…"></textarea>
       </div>
-      <button class="gen-btn" id="genBtn" onclick="generateImage()">✨ Generate Image — Free!</button>
+      <button class="gen-btn" id="genBtn" type="button" aria-label="Generate image" onclick="generateImage()">✨ Generate Image — Free!</button>
       <div style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px">Quick Ideas</div>
       <div class="prompt-chips">
         <span class="prompt-chip" onclick="setP('A majestic dragon flying over snowy mountains at golden hour')">🐉 Dragon</span>
@@ -297,9 +300,11 @@ let chatHist = [], codeHist = [], imgStyle = '', currentTab = 'chat';
 function switchTab(t) {
   currentTab = t;
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
   document.getElementById('panel-'+t).classList.add('active');
-  document.getElementById('tab-'+t).classList.add('active');
+  const activeTab = document.getElementById('tab-'+t);
+  activeTab.classList.add('active');
+  activeTab.setAttribute('aria-selected', 'true');
 }
 
 async function callAI(messages, sys) {
